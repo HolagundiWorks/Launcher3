@@ -93,20 +93,19 @@ public class CustomIconProvider extends DynamicIconProvider {
         ComponentName component = launcherActivityInfo.getComponentName();
         Drawable drawable = null;
         if (CustomIconUtils.usingValidPack(mContext) && isEnabledForApp(mContext, new ComponentKey(component, launcherActivityInfo.getUser()))) {
-            PackageManager pm = mContext.getPackageManager();
             if (mFactory.packCalendars.containsKey(component)) {
                 try {
-                    Resources res = pm.getResourcesForApplication(mFactory.iconPack);
+                    Resources res = mFactory.iconPackResources;
                     int drawableId = res.getIdentifier(mFactory.packCalendars.get(component)
                             + Calendar.getInstance().get(Calendar.DAY_OF_MONTH), "drawable", mFactory.iconPack);
                     if (drawableId != 0) {
-                        drawable = pm.getDrawable(mFactory.iconPack, drawableId, null);
+                        drawable = res.getDrawableForDensity(drawableId, iconDpi);
                     }
-                } catch (PackageManager.NameNotFoundException ignored) {
+                } catch (Resources.NotFoundException ignored) {
                 }
             } else if (mFactory.packComponents.containsKey(component)) {
                 int drawableId = mFactory.packComponents.get(component);
-                drawable = pm.getDrawable(mFactory.iconPack, mFactory.packComponents.get(component), null);
+                drawable = mFactory.iconPackResources.getDrawableForDensity(drawableId, iconDpi);
                 if (Utilities.ATLEAST_OREO && mFactory.packClocks.containsKey(drawableId)) {
                     drawable = CustomClock.getClock(mContext, drawable, mFactory.packClocks.get(drawableId), iconDpi);
                 }

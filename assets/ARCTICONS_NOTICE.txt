@@ -1,0 +1,7 @@
+Arcticons 15.0.5 is bundled as the launcher's built-in icon library.
+
+Project: https://github.com/Arcticons-Team/Arcticons
+Application license: GNU General Public License v3.0
+Icon artwork license: Creative Commons Attribution-ShareAlike 4.0
+
+Copyright and attribution belong to the Arcticons contributors.

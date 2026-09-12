@@ -69,7 +69,7 @@ public class CustomIconUtils {
     }
 
     static String getCurrentPack(Context context) {
-        return Utilities.getPrefs(context).getString(SettingsActivity.ICON_PACK_PREF, "");
+        return BuiltInIconPack.getPackageName(context);
     }
 
     static void setCurrentPack(Context context, String pack) {
@@ -79,7 +79,7 @@ public class CustomIconUtils {
     }
 
     static boolean usingValidPack(Context context) {
-        return isPackProvider(context, getCurrentPack(context));
+        return BuiltInIconPack.getResources(context) != null;
     }
 
     static void applyIconPackAsync(final Context context) {
@@ -132,7 +132,8 @@ public class CustomIconUtils {
 
     static void parsePack(CustomDrawableFactory factory, PackageManager pm, String iconPack) {
         try {
-            Resources res = pm.getResourcesForApplication(iconPack);
+            Resources res = BuiltInIconPack.getResources(factory.getContext());
+            if (res == null) return;
             int resId = res.getIdentifier("appfilter", "xml", iconPack);
             if (resId != 0) {
                 String compStart = "ComponentInfo{";
@@ -140,7 +141,7 @@ public class CustomIconUtils {
                 String compEnd = "}";
                 int compEndLength = compEnd.length();
 
-                XmlResourceParser parseXml = pm.getXml(iconPack, resId, null);
+                XmlResourceParser parseXml = res.getXml(resId);
                 while (parseXml.next() != XmlPullParser.END_DOCUMENT) {
                     if (parseXml.getEventType() == XmlPullParser.START_TAG) {
                         String name = parseXml.getName();
@@ -180,7 +181,7 @@ public class CustomIconUtils {
                     }
                 }
             }
-        } catch (PackageManager.NameNotFoundException | XmlPullParserException | IOException e) {
+        } catch (XmlPullParserException | IOException e) {
             e.printStackTrace();
         }
     }

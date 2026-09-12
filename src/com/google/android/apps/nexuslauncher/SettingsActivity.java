@@ -57,7 +57,6 @@ public class SettingsActivity extends com.android.launcher3.SettingsActivity imp
 
     public static class MySettingsFragment extends com.android.launcher3.SettingsActivity.LauncherSettingsFragment
             implements Preference.OnPreferenceChangeListener {
-        private CustomIconPreference mIconPackPref;
         private Context mContext;
 
         @Override
@@ -87,9 +86,6 @@ public class SettingsActivity extends com.android.launcher3.SettingsActivity imp
                 getPreferenceScreen().removePreference(findPreference(SettingsActivity.ENABLE_MINUS_ONE_PREF));
             }
 
-            mIconPackPref = (CustomIconPreference) findPreference(ICON_PACK_PREF);
-            mIconPackPref.setOnPreferenceChangeListener(this);
-
             findPreference(SHOW_PREDICTIONS_PREF).setOnPreferenceChangeListener(this);
         }
 
@@ -113,8 +109,6 @@ public class SettingsActivity extends com.android.launcher3.SettingsActivity imp
         @Override
         public void onResume() {
             super.onResume();
-            mIconPackPref.reloadIconPacks();
-
             SwitchPreference minusOne = (SwitchPreference) findPreference(ENABLE_MINUS_ONE_PREF);
             if (minusOne != null && !PixelBridge.isInstalled(getActivity())) {
                 minusOne.setChecked(false);
@@ -134,25 +128,6 @@ public class SettingsActivity extends com.android.launcher3.SettingsActivity imp
                         fragment.show(fm, BRIDGE_TAG);
                     }
                     break;
-                case ICON_PACK_PREF:
-                    if (!CustomIconUtils.getCurrentPack(mContext).equals(newValue)) {
-                        final ProgressDialog applyingDialog = ProgressDialog.show(mContext,
-                                null /* title */,
-                                mContext.getString(R.string.state_loading),
-                                true /* indeterminate */,
-                                false /* cancelable */);
-
-                        CustomIconUtils.setCurrentPack(getActivity(), (String) newValue);
-                        CustomIconUtils.applyIconPackAsync(mContext);
-
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                applyingDialog.cancel();
-                            }
-                        }, 1000);
-                    }
-                    return true;
                 case SHOW_PREDICTIONS_PREF:
                     if ((boolean) newValue) {
                         return true;

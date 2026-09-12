@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Process;
 
@@ -29,6 +30,7 @@ public class CustomDrawableFactory extends DynamicDrawableFactory implements Run
     private boolean mRegistered = false;
 
     String iconPack;
+    Resources iconPackResources;
     final Map<ComponentName, Integer> packComponents = new HashMap<>();
     final Map<ComponentName, String> packCalendars = new HashMap<>();
     final Map<Integer, CustomClock.Metadata> packClocks = new HashMap<>();
@@ -61,27 +63,22 @@ public class CustomDrawableFactory extends DynamicDrawableFactory implements Run
 
     void reloadIconPack() {
         iconPack = CustomIconUtils.getCurrentPack(mContext);
+        iconPackResources = BuiltInIconPack.getResources(mContext);
 
         if (mRegistered) {
             mContext.unregisterReceiver(mAutoUpdatePack);
             mRegistered = false;
         }
-        if (!iconPack.isEmpty()) {
-            mContext.registerReceiver(mAutoUpdatePack, ActionIntentFilter.newInstance(iconPack,
-                    Intent.ACTION_PACKAGE_CHANGED,
-                    Intent.ACTION_PACKAGE_REPLACED,
-                    Intent.ACTION_PACKAGE_FULLY_REMOVED),
-                    null,
-                    new Handler(LauncherModel.getWorkerLooper()));
-            mRegistered = true;
-        }
-
         packComponents.clear();
         packCalendars.clear();
         packClocks.clear();
         if (CustomIconUtils.usingValidPack(mContext)) {
             CustomIconUtils.parsePack(this, mContext.getPackageManager(), iconPack);
         }
+    }
+
+    Context getContext() {
+        return mContext;
     }
 
     synchronized void ensureInitialLoadComplete() {
@@ -103,7 +100,7 @@ public class CustomDrawableFactory extends DynamicDrawableFactory implements Run
                     info.user.equals(Process.myUserHandle())) {
                 int drawableId = packComponents.get(componentName);
                 if (packClocks.containsKey(drawableId)) {
-                    Drawable drawable = mContext.getPackageManager().getDrawable(iconPack, drawableId, null);
+                    Drawable drawable = iconPackResources.getDrawable(drawableId);
                     return mCustomClockDrawer.drawIcon(icon, drawable, packClocks.get(drawableId));
                 }
             }
