@@ -72,6 +72,7 @@ public class NexusLauncher {
         }
 
         public void finishBindingItems(final boolean b) {
+            mLauncher.ensurePaperdeskPanchangaWidget();
         }
 
         public List<ComponentKeyMapper<AppInfo>> getPredictedApps() {

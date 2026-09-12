@@ -622,6 +622,40 @@ public class Launcher extends BaseActivity
         return (int) info.id;
     }
 
+    /** Adds the Paperdesk Panchanga to the reserved top area once, when its provider is present. */
+    public void ensurePaperdeskPanchangaWidget() {
+        final ComponentName provider = new ComponentName(
+                "in.hcworks.madhvanidhi",
+                "com.paperdesk.launcher.widget.PanchangaWidgetProvider");
+        View existing = mWorkspace.getFirstMatch(new ItemOperator() {
+            @Override
+            public boolean evaluate(ItemInfo info, View view) {
+                return info instanceof LauncherAppWidgetInfo
+                        && provider.equals(((LauncherAppWidgetInfo) info).providerName);
+            }
+        });
+        if (existing != null || mWorkspace.getScreenOrder().isEmpty()) return;
+
+        LauncherAppWidgetProviderInfo providerInfo = mAppWidgetManager.findProvider(
+                provider, Process.myUserHandle());
+        if (providerInfo == null) return;
+
+        int appWidgetId = mAppWidgetHost.allocateAppWidgetId();
+        if (!mAppWidgetManager.bindAppWidgetIdIfAllowed(appWidgetId, providerInfo, null)) {
+            mAppWidgetHost.deleteAppWidgetId(appWidgetId);
+            return;
+        }
+
+        PendingAddWidgetInfo pending = new PendingAddWidgetInfo(providerInfo);
+        pending.container = LauncherSettings.Favorites.CONTAINER_DESKTOP;
+        pending.screenId = mWorkspace.getScreenOrder().get(0);
+        pending.cellX = 0;
+        pending.cellY = 0;
+        pending.spanX = Math.min(4, mDeviceProfile.inv.numColumns);
+        pending.spanY = 2;
+        completeAddAppWidget(appWidgetId, pending, null, providerInfo);
+    }
+
     public PopupDataProvider getPopupDataProvider() {
         return mPopupDataProvider;
     }
