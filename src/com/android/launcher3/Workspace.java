@@ -598,19 +598,8 @@ public class Workspace extends PagedView
                 }
             });
         }
-        // Always add a QSB on the first screen.
-        if (qsb == null) {
-            // In transposed layout, we add the QSB in the Grid. As workspace does not touch the
-            // edges, we do not need a full width QSB.
-            qsb = LayoutInflater.from(getContext())
-                    .inflate(R.layout.search_container_workspace,firstPage, false);
-        }
-
-        CellLayout.LayoutParams lp = new CellLayout.LayoutParams(0, 0, firstPage.getCountX(), 1);
-        lp.canReorder = false;
-        if (!firstPage.addViewToCellLayout(qsb, 0, R.id.search_container_workspace, lp, true)) {
-            Log.e(TAG, "Failed to add to item at (0, 0) to CellLayout");
-        }
+        // Paperdesk: leave the first workspace row available to the user.
+        // The fixed At A Glance / Smartspace view is intentionally not created.
     }
 
     public void removeAllWorkspaceScreens() {
