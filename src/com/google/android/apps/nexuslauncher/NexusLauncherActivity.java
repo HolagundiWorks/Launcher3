@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.android.launcher3.AppInfo;
 import com.android.launcher3.Launcher;
+import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.compat.WallpaperManagerCompat;
@@ -18,6 +19,8 @@ import java.util.List;
 
 public class NexusLauncherActivity extends Launcher {
     private final static String PREF_IS_RELOAD = "pref_reload_workspace";
+    private final static String PREF_BUILT_IN_ICON_VERSION = "paperdesk_builtin_icon_version";
+    private final static int BUILT_IN_ICON_VERSION = 1561;
     private NexusLauncher mLauncher;
     private boolean mIsReload;
     private String mThemeHints;
@@ -37,6 +40,12 @@ public class NexusLauncherActivity extends Launcher {
         }
 
         super.onCreate(savedInstanceState);
+
+        if (prefs.getInt(PREF_BUILT_IN_ICON_VERSION, 0) != BUILT_IN_ICON_VERSION) {
+            prefs.edit().putInt(PREF_BUILT_IN_ICON_VERSION, BUILT_IN_ICON_VERSION).apply();
+            LauncherAppState.getInstance(this).getIconCache().clear();
+            CustomIconUtils.applyIconPackAsync(this);
+        }
 
         if (mIsReload = prefs.getBoolean(PREF_IS_RELOAD, false)) {
             prefs.edit().remove(PREF_IS_RELOAD).apply();
