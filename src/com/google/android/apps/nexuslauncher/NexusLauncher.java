@@ -31,6 +31,7 @@ import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 
 public class NexusLauncher {
     private final Launcher mLauncher;
@@ -74,7 +75,7 @@ public class NexusLauncher {
         }
 
         public List<ComponentKeyMapper<AppInfo>> getPredictedApps() {
-            return ((CustomAppPredictor) mLauncher.getUserEventDispatcher()).getPredictions();
+            return Collections.emptyList();
         }
 
         @Override

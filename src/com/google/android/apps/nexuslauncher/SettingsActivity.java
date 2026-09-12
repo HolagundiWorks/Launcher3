@@ -65,7 +65,6 @@ public class SettingsActivity extends com.android.launcher3.SettingsActivity imp
 
             mContext = getActivity();
 
-            findPreference(SHOW_PREDICTIONS_PREF).setOnPreferenceChangeListener(this);
             findPreference(ENABLE_MINUS_ONE_PREF).setOnPreferenceChangeListener(this);
             findPreference(ENABLE_MINUS_ONE_PREF).setTitle(getDisplayGoogleTitle());
 
@@ -86,7 +85,6 @@ public class SettingsActivity extends com.android.launcher3.SettingsActivity imp
                 getPreferenceScreen().removePreference(findPreference(SettingsActivity.ENABLE_MINUS_ONE_PREF));
             }
 
-            findPreference(SHOW_PREDICTIONS_PREF).setOnPreferenceChangeListener(this);
         }
 
         private String getDisplayGoogleTitle() {
@@ -127,14 +125,6 @@ public class SettingsActivity extends com.android.launcher3.SettingsActivity imp
                         InstallFragment fragment = new InstallFragment();
                         fragment.show(fm, BRIDGE_TAG);
                     }
-                    break;
-                case SHOW_PREDICTIONS_PREF:
-                    if ((boolean) newValue) {
-                        return true;
-                    }
-                    SettingsActivity.SuggestionConfirmationFragment confirmationFragment = new SettingsActivity.SuggestionConfirmationFragment();
-                    confirmationFragment.setTargetFragment(this, 0);
-                    confirmationFragment.show(getFragmentManager(), preference.getKey());
                     break;
             }
             return false;
